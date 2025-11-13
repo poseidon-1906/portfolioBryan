@@ -1,151 +1,140 @@
-// htmlcss progress circular bar 
-let htmlProgress = document.querySelector(".html-css"),
-  htmlValue = document.querySelector(".html-progress");
+document.addEventListener("DOMContentLoaded", () => {
+  const progressConfigs = [
+    {
+      container: document.querySelector(".html-css"),
+      valueEl: document.querySelector(".html-progress"),
+      endValue: 90,
+      color: "var(--accent-secondary)",
+    },
+    {
+      container: document.querySelector(".javascript"),
+      valueEl: document.querySelector(".javascript-progress"),
+      endValue: 65,
+      color: "var(--accent-primary)",
+    },
+    {
+      container: document.querySelector(".sql"),
+      valueEl: document.querySelector(".sql-progress"),
+      endValue: 80,
+      color: "var(--accent-tertiary)",
+    },
+    {
+      container: document.querySelector(".reactjs"),
+      valueEl: document.querySelector(".reactjs-progress"),
+      endValue: 75,
+      color: "rgba(93, 158, 255, 0.95)",
+    },
+    {
+      container: document.querySelector(".nodejs"),
+      valueEl: document.querySelector(".nodejs-progress"),
+      endValue: 60,
+      color: "#ff4d4f",
+    },
+  ];
 
-let htmlStartValue = 0,
-  htmlEndValue = 90,
-  htmlspeed = 30;
+  const trackColor = "rgba(255,255,255,0.08)";
 
-let progresshtml = setInterval(() => {
-  htmlStartValue++;
+  const animateCircularProgress = ({ container, valueEl, endValue, color }) => {
+    if (!container || !valueEl) return;
+    let currentValue = 0;
+    const step = () => {
+      currentValue += 1;
+      valueEl.textContent = `${currentValue}%`;
+      container.style.background = `conic-gradient(${color} ${
+        currentValue * 3.6
+      }deg, ${trackColor} ${currentValue * 3.6}deg)`;
+      if (currentValue < endValue) {
+        requestAnimationFrame(step);
+      }
+    };
+    requestAnimationFrame(step);
+  };
 
-  htmlValue.textContent = `${htmlStartValue}%`;
-  htmlProgress.style.background = `conic-gradient(#fca61f ${
-    htmlStartValue * 3.6
-  }deg, #ededed 0deg)`;
+  const startProgressAnimations = () => {
+    progressConfigs.forEach((config) => {
+      if (config.hasAnimated || !config.container || !config.valueEl) return;
+      config.hasAnimated = true;
+      config.valueEl.textContent = "0%";
+      config.container.style.background = `conic-gradient(${config.color} 0deg, ${trackColor} 0deg)`;
+      animateCircularProgress(config);
+    });
+  };
 
-  if (htmlStartValue == htmlEndValue) {
-    clearInterval(progresshtml);
+  const skillSection = document.querySelector("#competances");
+  if (skillSection) {
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            startProgressAnimations();
+            obs.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.35 }
+    );
+    observer.observe(skillSection);
+  } else {
+    startProgressAnimations();
   }
-}, htmlspeed);
 
-// javasript progress circular bar 
-let javascriptProgress = document.querySelector(".javascript"),
-  javascriptValue = document.querySelector(".javascript-progress");
-
-let javascriptStartValue = 0,
-  javascriptEndValue = 65,
-  jsspeed = 30;
-
-let progressjs = setInterval(() => {
-  javascriptStartValue++;
-
-  javascriptValue.textContent = `${javascriptStartValue}%`;
-  javascriptProgress.style.background = `conic-gradient(#7d2ae8 ${
-    javascriptStartValue * 3.6
-  }deg, #ededed 0deg)`;
-
-  if (javascriptStartValue == javascriptEndValue) {
-    clearInterval(progressjs);
-  }
-}, jsspeed);
-
-// sql progress circular bar 
-let sqlProgress = document.querySelector(".sql"),
-  sqlValue = document.querySelector(".sql-progress");
-
-let sqlStartValue = 0,
-    sqlEndValue = 80,
-    sqlspeed = 30;
-
-let progresssql = setInterval(() => {
-  sqlStartValue++;
-
-  sqlValue.textContent = `${sqlStartValue}%`;
-  sqlProgress.style.background = `conic-gradient(#20c997 ${
-    sqlStartValue * 3.6
-  }deg, #ededed 0deg)`;
-
-  if (sqlStartValue == sqlEndValue) {
-    clearInterval(progresssql);
-  }
-}, sqlspeed);
-
-// reactjs progress circular bar 
-let reactProgress = document.querySelector(".reactjs"),
-  reactValue = document.querySelector(".reactjs-progress");
-
-let reactStartValue = 0,
-  reactEndValue = 30,
-  rjsspeed = 30;
-
-let progressreact = setInterval(() => {
-  reactStartValue++;
-
-  reactValue.textContent = `${reactStartValue}%`;
-  reactProgress.style.background = `conic-gradient(#3f396d ${
-    reactStartValue * 3.6
-  }deg, #ededed 0deg)`;
-
-  if (reactStartValue == reactEndValue) {
-    clearInterval(progressreact);
-  }
-}, rjsspeed);
-
-
-// filter using javascript
-$(document).ready(function () {
-  $(".filter-item").click(function () {
+  $(".filter-item").on("click", function () {
     const value = $(this).attr("data-filter");
-    if (value == "all") {
-      $(".post").show("1000");
+    if (value === "all") {
+      $(".post").fadeIn(400);
     } else {
-      $(".post")
-        .not("." + value)
-        .hide("1000");
+      $(".post").hide(0);
       $(".post")
         .filter("." + value)
-        .show("1000");
+        .fadeIn(400);
     }
+    $(".filter-item").removeClass("active");
+    $(this).addClass("active");
   });
-});
+  $(".filter-item[data-filter='all']").addClass("active");
 
+  const navbar = document.getElementById("navbar-top");
+  const updateNavbarState = () => {
+    if (!navbar) return;
+    if (window.scrollY > 50) {
+      navbar.classList.add("fixed-top");
+      const navbarHeight = document.querySelector(".navbar")?.offsetHeight || 0;
+      document.body.style.paddingTop = `${navbarHeight}px`;
+    } else {
+      navbar.classList.remove("fixed-top");
+      document.body.style.paddingTop = "0";
+    }
+  };
 
-// Créer une barre de navigation fixe
-document.addEventListener("DOMContentLoaded", function(){
-  window.addEventListener('scroll', function() {
-      if (window.scrollY > 50) {
-        document.getElementById('navbar-top').classList.add('fixed-top');
-        // add padding top to show content behind navbar
-        navbar_height = document.querySelector('.navbar').offsetHeight;
-        document.body.style.paddingTop = navbar_height + 'px';
-      } else {
-        document.getElementById('navbar-top').classList.remove('fixed-top');
-         // remove padding top from body
-        document.body.style.paddingTop = '0';
-      } 
-  });
-}); 
+  const backToTopButton = document.getElementById("btn-back-to-top");
+  const toggleBackToTop = () => {
+    if (!backToTopButton) return;
+    if (window.scrollY > 120) {
+      backToTopButton.style.display = "block";
+    } else {
+      backToTopButton.style.display = "none";
+    }
+  };
 
+  const handleScroll = () => {
+    updateNavbarState();
+    toggleBackToTop();
+  };
 
-// ajouter des fonctionalitées sur les boutons 
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  handleScroll();
 
-//Get the button
-let mybutton = document.getElementById("btn-back-to-top");
-
-// When the user scrolls down 20px from the top of the document, show the button
-window.onscroll = function () {
-  scrollFunction();
-};
-function scrollFunction() {
-  if (
-    document.body.scrollTop > 20 ||
-    document.documentElement.scrollTop > 20
-  ) {
-    mybutton.style.display = "block";
-  } else {
-    mybutton.style.display = "none";
+  if (backToTopButton) {
+    backToTopButton.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
   }
-}
-// When the user clicks on the button, scroll to the top of the document
-mybutton.addEventListener("click",function(){
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
 });
-
 
 //=========================== Email JS===========================
-
 
 function envoiMail(){
   var parmsP = {
